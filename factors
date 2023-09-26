@@ -3,6 +3,9 @@
 import random
 import math
 import sys
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 def read_numbers_from_file(file_path):
     with open(file_path, 'r') as f:
@@ -14,21 +17,43 @@ def gcd(a, b):
         a, b = b, a % b
     return abs(a)
 
-def pollards_rho(n):
+def trial_division(n):
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return i, n // i
+    return None
+
+def pollards_rho(n, iteration_limit=10000):
     x, c, y = random.randint(1, n-1), random.randint(1, n-1), random.randint(1, n-1)
     d = 1
+    iteration_count = 0
     while d == 1:
-        x = (x*x + c) % n
-        y = (y*y + c) % n
-        y = (y*y + c) % n
-        d = gcd(x-y, n)
+        if iteration_count > iteration_limit:
+            return None
+        x = (x * x + c) % n
+        y = (y * y + c) % n
+        y = (y * y + c) % n
+        d = gcd(x - y, n)
+        iteration_count += 1
     return d
 
 def factorize(n):
+    d = trial_division(n)
+    if d:
+        return d
+
     d = n
-    while d >= n:
-        d = pollards_rho(n)
-    return d, n // d
+    iteration_limit = 10000
+    retry_count = 0
+    while d is None or d >= n:
+        d = pollards_rho(n, iteration_limit)
+        if d is None:
+            retry_count += 1
+            if retry_count > 5:
+                logging.debug(f"Pollard's rho failed for {n}. Retries: {retry_count}")
+                return None, None
+        else:
+            return d, n // d
 
 def main():
     if len(sys.argv) < 2:
@@ -40,7 +65,12 @@ def main():
 
     for n in numbers:
         p, q = factorize(n)
-        print(f"{n}={p}*{q}")
+        if p is None or q is None:
+            print(f"Failed to factor {n}")
+        elif p == 1 or q == 1:
+            print(f"Failed to factor {n} into primes")
+        else:
+            print(f"{n}={p}*{q}")
 
 if __name__ == "__main__":
     main()
