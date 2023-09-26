@@ -1,27 +1,28 @@
-#!/usr/bin/env python3
-
+import math
 import sys
 
-def is_prime(num):
-    if num < 2:
-        return False
-    for i in range(2, int(num ** 0.5) + 1):
-        if num % i == 0:
-            return False
-    return True
+def read_numbers_from_file(file_path):
+    with open(file_path, 'r') as file:
+        numbers = [int(line.strip()) for line in file.readlines()]
+    return numbers
 
-def main(filename):
-    with open(filename, 'r') as f:
-        for line in f:
-            n = int(line.strip())
-            for i in range(2, int(n ** 0.5) + 1):
-                if n % i == 0:
-                    if is_prime(i) and is_prime(n // i):
-                        print(f"{n}={i}*{n // i}")
-                        break
+def factorize(n):
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return i, n // i
+    return n, 1
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: factors <file>")
+        return
+
+    file_path = sys.argv[1]
+    numbers = read_numbers_from_file(file_path)
+
+    for n in numbers:
+        p, q = factorize(n)
+        print(f"{n}={p}*{q}")
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: rsa <file>")
-    else:
-        main(sys.argv[1])
+    main()
