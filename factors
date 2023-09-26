@@ -1,18 +1,28 @@
 #!/usr/bin/env python3
 
+import random
 import math
-import sys
 
-def read_numbers_from_file(file_path):
-    with open(file_path, 'r') as file:
-        numbers = [int(line.strip()) for line in file.readlines()]
-    return numbers
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return abs(a)
+
+def pollards_rho(n):
+    x, c, y = random.randint(1, n-1), random.randint(1, n-1), random.randint(1, n-1)
+    d = 1
+    while d == 1:
+        x = (x*x + c) % n
+        y = (y*y + c) % n
+        y = (y*y + c) % n
+        d = gcd(x-y, n)
+    return d
 
 def factorize(n):
-    for i in range(2, int(math.sqrt(n)) + 1):
-        if n % i == 0:
-            return n // i, i  # Larger factor listed first
-    return n, 1
+    d = n
+    while d >= n:
+        d = pollards_rho(n)
+    return d, n // d
 
 def main():
     if len(sys.argv) < 2:
