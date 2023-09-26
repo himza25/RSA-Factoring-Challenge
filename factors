@@ -2,32 +2,33 @@
 
 import sys
 
-# Function to find factors
 def find_factors(n):
     for i in range(2, int(n ** 0.5) + 1):
         if n % i == 0:
             return i, n // i
-    return 1, n  # In case no factors found other than itself and 1
+    return n, 1
 
-# Main function
 def main():
     if len(sys.argv) != 2:
         print("Usage: factors <file>")
-        sys.exit(1)
+        return
 
-    file_path = sys.argv[1]
+    input_file = sys.argv[1]
 
     try:
-        with open(file_path, 'r') as file:
-            numbers = file.readlines()
-    except FileNotFoundError:
-        print(f"Error: File '{file_path}' not found.")
-        sys.exit(1)
+        with open(input_file, 'r') as f:
+            numbers = f.readlines()
 
-    for num_str in numbers:
-        num = int(num_str.strip())
-        factor1, factor2 = find_factors(num)
-        print(f"{num}={factor1}*{factor2}")
+        for num_str in numbers:
+            num = int(num_str.strip())
+            p, q = find_factors(num)
+            print(f"{num}={p}*{q}")
+
+    except FileNotFoundError:
+        print(f"File {input_file} not found.")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
     main()
