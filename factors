@@ -13,7 +13,6 @@ def gcd(a, b):
         a, b = b, a % b
     return abs(a)
 
-# Pollard's rho algorithm for optimization
 def pollards_rho(n):
     if n % 2 == 0:
         return 2, n // 2
@@ -27,7 +26,6 @@ def pollards_rho(n):
         x = (x * x + c) % n
         y = (y * y + c) % n
         y = (y * y + c) % n
-
         d = gcd(abs(x - y), n)
 
     return d, n // d
@@ -43,13 +41,13 @@ def main():
     for n in numbers:
         p, q = pollards_rho(n)
 
-        # Sort p and q so that the larger factor appears first
-        p, q = sorted([p, q], reverse=True)
-
         if p * q != n:
             print(f"Failed to factor {n}")
         else:
-            print(f"{n}={p}*{q}")
+            # Ensure the second factor is larger or equal (may help to replicate the example)
+            p, q = sorted([p, q])
+
+            print(f"{n}={q}*{p}")
 
 if __name__ == "__main__":
     main()
