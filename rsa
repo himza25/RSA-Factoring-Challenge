@@ -54,3 +54,4 @@ if __name__ == "__main__":
         print(f"Time taken: {elapsed_time} seconds")
     else:
         print(f"Could not factorize {n} within 5 seconds.")
+
